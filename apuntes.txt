@@ -1,0 +1,34 @@
+
+##Lo que primero que tenemos que hacer:
+  Es levantar el servidor y borrar lo que no necesitamos
+
+##Despues creamos una Carpeta public para levantar un servidor estatico. 
+  Mirar el HTML y el CSS
+  Luego instalamos esta dependencia
+  npm i @nestjs/serve-static
+  y Luego hacemos la configuracion en el app.module
+
+##Luego crear nuestra RestApi
+  nest g res pokemon --no-spec
+
+##Luego hacemos una ruta global en el main.ts
+
+##Despues crear el documento de docker-compose.yaml
+  sugerencia seguir a pie de la letra lo que tiene adentro
+
+##Despues instalar esta dependencia
+  npm i @nestjs/mongoose mongoose
+  Una vez hecho eso, la conexion a la base de datos. en el app.module
+
+
+##*** Schemas ***##
+
+##Entramos a la Carpeta entities y hacemos lo que esta en el codigo del archivo. 
+  Una vez hecho todo eso nos dirigimos al pokemon.module para configurar el schema y sea creada la tabla
+
+##Luego Creamos los datos en el dto
+  Primero instalamos estas dependencias npm i class-validator class-transformer
+  luego hacemos la configuracion global de las validaciones en el Main
+  Depues nos dirigimos al create-pokemon.dto.ts y hacemos lo que esta ahi.
+
+##Guardamos los datos en la Base de datos
