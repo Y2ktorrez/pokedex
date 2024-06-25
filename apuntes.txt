@@ -96,3 +96,8 @@
     nest g mo common
     lugo de eso generamos una carpeta pipes
     nest g pi common/pipes/parseMongoId --no-spec
+
+    Y hacemos todo lo que esta en parse-mongo etc 
+    y lo mismo en remove service etc etc
+
+    ##
