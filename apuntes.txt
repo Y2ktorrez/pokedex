@@ -32,3 +32,48 @@
   Depues nos dirigimos al create-pokemon.dto.ts y hacemos lo que esta ahi.
 
 ##Guardamos los datos en la Base de datos
+  Ahora nos dirigimos al pokemon.service donde haremos estatico
+  async create(createPokemonDto: CreatePokemonDto) {
+    //Esto para que lo guarde en minuscula
+    createPokemonDto.name = createPokemonDto.name.toLocaleLowerCase();
+    try {
+      const pokemon = await this.pokemonModel.create(createPokemonDto);
+      return pokemon;
+    } catch (error) {
+      if(error.code === 1100){
+        //Error de que ya Existe 
+        throw new BadRequestException(`Pokemon exists in db ${JSON.stringify(error.keyValue)}`);
+      }
+      //Error que no sabemos
+      console.log(error);
+      throw new InternalServerErrorException(`Can't create Pokemon - Check server log`)
+    }
+  }
+
+  para crear datos y que se conecte con la base de datos
+
+  ##Ahora para verificar o mostrar contenido por id o por algun termino se hace de esta manera
+    service y el controller
+
+    //term = termino de busqueda
+    async findOne(term: string) {
+      let pokemon: Pokemon;
+      if(!isNaN(+term)){
+        pokemon = await this.pokemonModel.findOne({no: term});
+      }
+      if(!pokemon && isValidObjectId(term)){
+        pokemon = await this.pokemonModel.findById(term);
+      }
+      if(!pokemon){
+        pokemon = await this.pokemonModel.findOne({name: term.toLowerCase().trim() })
+      }
+      if(!pokemon) throw new NotFoundException(`Pokemon with id, name or no "${term}" not found`);
+
+      return pokemon;
+    }
+
+    //term = termino de busqueda
+    @Get(':term')
+    findOne(@Param('term') term: string) {
+      return this.pokemonService.findOne(term);
+    }
