@@ -77,3 +77,22 @@
     findOne(@Param('term') term: string) {
       return this.pokemonService.findOne(term);
     }
+
+    ##El Mismon caso para el Actualizar un dato. 
+    Pero ahora aumentamos un manejo de errores que lo hacemos de esta manera
+      //Manejo de Errores
+      private handleExceptions(error: any){
+        if(error.code === 1100){
+        //Error de que ya Existe algo en la BD 
+        throw new BadRequestException(`Pokemon exists in db ${JSON.stringify(error.keyValue)}`);
+        }
+        console.log(error);
+        //Error que no sabemos
+        throw new InternalServerErrorException(`Can't create Pokemon - Check server logs`)
+      }
+
+    ##Custon Pipes
+    Vamos a generar una carpeta common donde manejaremos los custons 
+    nest g mo common
+    lugo de eso generamos una carpeta pipes
+    nest g pi common/pipes/parseMongoId --no-spec
