@@ -100,4 +100,24 @@
     Y hacemos todo lo que esta en parse-mongo etc 
     y lo mismo en remove service etc etc
 
-    ##
+    ##Ahora empezamos el SEED
+    instalamos axios 
+    npm i axios 
+    y la configuracion de axios lo hacemos en el seed.service. COPIANDO lA URL de la RestApi
+
+    ##Creamos una carpeta llamada interface 
+    export interface PokeResponse {
+      count: number;
+      next: string;
+      previous: null;
+      results: Result[];
+    }
+
+    export interface Result{
+      name: string;
+      url: string;
+    }
+
+    En el archivo que esta en la carpeta creamos esto.
+
+    #
