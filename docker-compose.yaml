@@ -1,5 +1,6 @@
-#Configuracion estandar para levantar una imagen en docker de mongo
-#Despues ejecutar: docker-compose up -d
+#Instalar esta dependenncia npm i @nestjs/mongoose mongoose 
+#Y se levanta con esto docker-compose up -d
+
 version: '3'
 services:
   db:

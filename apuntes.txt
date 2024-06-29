@@ -1,35 +1,154 @@
+## Primero instalamos la aplicación
 
-##Lo que primero que tenemos que hacer:
-  Es levantar el servidor y borrar lo que no necesitamos
+nest new --nombre de la aplicación
+Luego la ejecutamos npm run start:dev
+Borramos los archivos que no necesitamos y hacemos los cambios correspondientes
+Despues creamos una Carpeta public para levantar un servidor estatico.
 
-##Despues creamos una Carpeta public para levantar un servidor estatico. 
   Mirar el HTML y el CSS
   Luego instalamos esta dependencia
   npm i @nestjs/serve-static
   y Luego hacemos la configuracion en el app.module
 
-##Luego crear nuestra RestApi
-  nest g res pokemon --no-spec
+## Ahora hacemos la configuración de Docker
 
-##Luego hacemos una ruta global en el main.ts
+Creamos un archivo de docker docker-compose.yaml y dentro del archivo hacemos esta configuración:
 
-##Despues crear el documento de docker-compose.yaml
-  sugerencia seguir a pie de la letra lo que tiene adentro
+version: '3'
+services:
+  db:
+    image: mongo:5
+    restart: always
+    ports:
+      - 27017:27017
+    environment: 
+      MONGODB_DATABASE: pokemon
+    volumes:
+      - ./mongo:/data/db
 
-##Despues instalar esta dependencia
-  npm i @nestjs/mongoose mongoose
-  Una vez hecho eso, la conexion a la base de datos. en el app.module
+Bueno después instalamos esta dependencia:
+npm i @nestjs/mongoose mongoose 
+
+## Ahora Hasta donde Vamos hacemos las configuraciones necesarias y levantamos la base y la conectamos con nuestro backend
+
+En el archivo main hacemos un configuración de ruta global de esta manera:
+  //Rutas Globales
+  app.setGlobalPrefix('api/v1');
+
+en el app.module conectamos el contenedor de docker:
+imports: [
+    MongooseModule.forRoot('mongodb://localhost:27017/pokemon'), 
+
+Ahora Primero usamos este comando para docker:
+docker-compose up -d
+
+Luego levantamos el backend nuevamente: npm run start:dev
+
+## Creamos el archivo RES API 
+
+usamos este comando:
+nest g res --nombre_ --no-spec 
+
+Y comprobamos si esta todo correcto...
+
+## Programamos en pokemon.entity
+
+En la Entidad definimos el esquema que tendrá la base de datos:
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
+
+@Schema()
+export class Pokemon extends Document {
+
+    @Prop({
+        unique: true,
+        index: true,
+    })
+    name: string;
+
+    @Prop({
+        unique: true,
+        index: true,
+    })
+    no: string;
+}
+
+export const PokemonSchema = SchemaFactory.createForClass(Pokemon);
+
+Y luego lo Configuramos en el app.module:
+import { Module } from '@nestjs/common';
+import { PokemonService } from './pokemon.service';
+import { PokemonController } from './pokemon.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Pokemon, PokemonSchema } from './entities/pokemon.entity';
+
+@Module({
+  controllers: [PokemonController],
+  providers: [PokemonService],
+  /*Importamos el Schema para que se cree*/
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: Pokemon.name,
+        schema: PokemonSchema,
+      }
+    ])
+  ],
+  /*Exportamos el Modudo*/
+  exports: [
+    MongooseModule
+  ]
+})
+
+export class PokemonModule {} 
+
+## Programamos en create-pokemon.dto.ts
+
+Primero instalamos esta dependencia: npm i class-validator class-transformer
+Luego hacemos una configuración de validaciones globales en el Main
+  //Validacion Global
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      /*Convertir al tipo de dato esperado los DTO*/
+      transform: true,
+      transformOptions:{
+        enableImplicitConversion: true,
+      }
+    })
+  );  
+
+Ahora Modificamos asi el create-pokemon.dto.ts:
+import { IsInt, IsPositive, IsString, Min, MinLength } from "class-validator";
+
+export class CreatePokemonDto {
+
+    @IsInt()
+    @IsPositive()
+    @Min(1)
+    no: number;
+
+    @IsString()
+    @MinLength(1)
+    name: string;
+}
+
+El update lo dejamos tal y como esta.
+
+Luego de todo esto corremos el backend y comprobamos si todo esta correcto. Igual verificamos si el schema de la base de datos se creo.
 
 
-##*** Schemas ***##
 
-##Entramos a la Carpeta entities y hacemos lo que esta en el codigo del archivo. 
-  Una vez hecho todo eso nos dirigimos al pokemon.module para configurar el schema y sea creada la tabla
 
-##Luego Creamos los datos en el dto
-  Primero instalamos estas dependencias npm i class-validator class-transformer
-  luego hacemos la configuracion global de las validaciones en el Main
-  Depues nos dirigimos al create-pokemon.dto.ts y hacemos lo que esta ahi.
+
+
+
+
+
+
+
+
 
 ##Guardamos los datos en la Base de datos
   Ahora nos dirigimos al pokemon.service donde haremos estatico
